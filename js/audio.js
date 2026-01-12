@@ -558,4 +558,4 @@ class AudioManager {
 }
 
 // Global audio instance
-const Audio = new AudioManager();
+const GameAudio = new AudioManager();

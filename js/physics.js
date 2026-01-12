@@ -708,3 +708,8 @@ window.Physics = {
 // Also export as globals for convenience
 window.Ball = Ball;
 window.PhysicsWorld = PhysicsWorld;
+
+// Export as globals for elements.js compatibility
+window.circleLineCollision = circleLineCollision;
+window.resolveCollision = resolveCollision;
+window.PHYSICS = PHYSICS;

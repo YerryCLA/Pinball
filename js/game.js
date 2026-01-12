@@ -126,7 +126,7 @@ class Game {
         document.addEventListener('keydown', (e) => {
             // Initialize audio on first user interaction
             if (!this.audioInitialized) {
-                Audio.init();
+                GameAudio.init();
                 this.audioInitialized = true;
             }
 
@@ -136,7 +136,7 @@ class Game {
                     e.preventDefault();
                     if (this.state === GameState.PLAYING) {
                         this.leftFlipper.activate();
-                        Audio.playFlipperSound();
+                        GameAudio.playFlipperSound();
                     }
                     break;
 
@@ -145,7 +145,7 @@ class Game {
                     e.preventDefault();
                     if (this.state === GameState.PLAYING) {
                         this.rightFlipper.activate();
-                        Audio.playFlipperSound();
+                        GameAudio.playFlipperSound();
                     }
                     break;
 
@@ -193,7 +193,7 @@ class Game {
         // Also handle touch/click for mobile and audio init
         this.canvas.addEventListener('click', () => {
             if (!this.audioInitialized) {
-                Audio.init();
+                GameAudio.init();
                 this.audioInitialized = true;
             }
         });
@@ -244,7 +244,7 @@ class Game {
         this.spawnBall();
         this.updateUI();
 
-        Audio.playStartSound();
+        GameAudio.playStartSound();
     }
 
     /**
@@ -278,7 +278,7 @@ class Game {
         this.plungerCharging = false;
         this.plungerPower = 0;
 
-        Audio.playLaunchSound();
+        GameAudio.playLaunchSound();
     }
 
     /**
@@ -338,10 +338,10 @@ class Game {
 
         // Check flippers
         if (this.leftFlipper.checkCollision(this.ball)) {
-            Audio.playFlipperSound();
+            GameAudio.playFlipperSound();
         }
         if (this.rightFlipper.checkCollision(this.ball)) {
-            Audio.playFlipperSound();
+            GameAudio.playFlipperSound();
         }
 
         // Check bumpers
@@ -350,7 +350,7 @@ class Game {
             if (points > 0) {
                 this.addScore(points);
                 this.spawnParticles(bumper.x, bumper.y, 8, '#ff00ff');
-                Audio.playBumperSound();
+                GameAudio.playBumperSound();
             }
         });
 
@@ -360,7 +360,7 @@ class Game {
             if (points > 0) {
                 this.addScore(points);
                 this.spawnParticles(this.ball.x, this.ball.y, 5, '#00ffff');
-                Audio.playSlingshotSound();
+                GameAudio.playSlingshotSound();
             }
         });
 
@@ -370,13 +370,13 @@ class Game {
             if (points > 0) {
                 this.addScore(points);
                 this.spawnParticles(target.x + target.width / 2, target.y + target.height / 2, 6, '#ffff00');
-                Audio.playTargetSound();
+                GameAudio.playTargetSound();
 
                 // Check if all targets hit (bonus)
                 if (this.targets.every(t => t.isLit)) {
                     this.addScore(1000);
                     this.targets.forEach(t => t.reset());
-                    Audio.playMultiplierSound();
+                    GameAudio.playMultiplierSound();
                 }
             }
         });
@@ -394,7 +394,7 @@ class Game {
         const newMultiplier = Math.floor(this.score / 5000) + 1;
         if (newMultiplier > this.multiplier && this.multiplier < 10) {
             this.multiplier = Math.min(newMultiplier, 10);
-            Audio.playMultiplierSound();
+            GameAudio.playMultiplierSound();
         }
 
         // Update high score if needed
@@ -412,7 +412,7 @@ class Game {
         this.balls--;
         this.ball = null;
 
-        Audio.playBallLostSound();
+        GameAudio.playBallLostSound();
 
         if (this.balls <= 0) {
             this.gameOver();
@@ -444,7 +444,7 @@ class Game {
         document.getElementById('final-score').textContent = formatScore(this.score);
         document.getElementById('game-over-screen').classList.remove('hidden');
 
-        Audio.playGameOverSound();
+        GameAudio.playGameOverSound();
     }
 
     /**

@@ -33,7 +33,7 @@ const TABLE = {
     plunger: { x: 375, y: 600 },
 
     // Ball spawn position
-    ballSpawn: { x: 375, y: 550 },
+    ballSpawn: { x: 370, y: 550 },
 
     // Drain area
     drainY: 680,
@@ -57,6 +57,7 @@ const TABLE = {
         // Inner curve wall (separates plunger lane from play area)
         { x1: 350, y1: 80, x2: 365, y2: 50 },    // Angles up-right from main wall
         { x1: 365, y1: 50, x2: 365, y2: 35 },    // Short vertical to close lane
+        { x1: 365, y1: 35, x2: 360, y2: 20 },    // Connect inner curve to outer curve
         // Top wall (shortened - opening for ball to enter from curve)
         { x1: 20, y1: 0, x2: 300, y2: 0 },
         // Top left corner curve
