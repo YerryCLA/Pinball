@@ -1155,9 +1155,11 @@ class Kicker {
     }
 
     draw(ctx) {
+        ctx.save();
+
         const pulse = Math.sin(this.pulsePhase) * 0.1 + 1;
 
-        // Draw hole
+        // Draw hole with neon glow
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius * pulse, 0, Math.PI * 2);
 
@@ -1166,18 +1168,20 @@ class Kicker {
             this.x, this.y, this.radius
         );
         gradient.addColorStop(0, '#000000');
-        gradient.addColorStop(0.7, '#220022');
-        gradient.addColorStop(1, '#440044');
+        gradient.addColorStop(0.5, '#110022');
+        gradient.addColorStop(1, '#330033');
 
         ctx.fillStyle = gradient;
         ctx.fill();
 
-        // Draw ring
-        ctx.strokeStyle = this.hasBall ? '#ff00ff' : '#880088';
+        // Draw ring with pink neon glow
+        ctx.strokeStyle = this.hasBall ? '#ffff00' : '#ff00ff';
+        ctx.shadowColor = this.hasBall ? '#ffff00' : '#ff00ff';
+        ctx.shadowBlur = this.hasBall ? 25 : 15;
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Draw eject direction indicator
+        // Draw eject direction indicator with cyan
         if (!this.hasBall) {
             ctx.beginPath();
             ctx.moveTo(this.x, this.y);
@@ -1185,10 +1189,14 @@ class Kicker {
                 this.x + Math.cos(this.ejectAngle) * this.radius * 1.5,
                 this.y + Math.sin(this.ejectAngle) * this.radius * 1.5
             );
-            ctx.strokeStyle = '#660066';
+            ctx.strokeStyle = '#00ffff';
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = 8;
             ctx.lineWidth = 2;
             ctx.stroke();
         }
+
+        ctx.restore();
     }
 }
 
