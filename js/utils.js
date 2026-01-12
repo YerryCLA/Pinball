@@ -50,19 +50,21 @@ const TABLE = {
         { x1: 340, y1: 550, x2: 310, y2: 600 },
         { x1: 310, y1: 600, x2: 310, y2: 650 },
 
-        // Plunger lane outer wall (right side of plunger)
-        { x1: 380, y1: 50, x2: 380, y2: 650 },
+        // Plunger lane outer wall (right side of plunger) - goes up to y:80
+        { x1: 380, y1: 80, x2: 380, y2: 650 },
 
-        // Top deflector curve - guides ball LEFT into play area
-        // Ball launches up, hits this curve, deflects down-left into main area
-        { x1: 380, y1: 50, x2: 370, y2: 30 },     // Start curving left
-        { x1: 370, y1: 30, x2: 350, y2: 15 },     // Continue curve
-        { x1: 350, y1: 15, x2: 320, y2: 10 },     // Apex of curve
-        { x1: 320, y1: 10, x2: 280, y2: 20 },     // Deflect down-left into play area
+        // Curved outer wall at TOP of plunger lane - catches ball and deflects LEFT
+        // This is a tight curve that the ball hits when launched
+        { x1: 380, y1: 80, x2: 385, y2: 60 },     // Curve outward slightly
+        { x1: 385, y1: 60, x2: 385, y2: 40 },     // Continue up
+        { x1: 385, y1: 40, x2: 380, y2: 25 },     // Start curving left
+        { x1: 380, y1: 25, x2: 365, y2: 15 },     // Curve more left
+        { x1: 365, y1: 15, x2: 340, y2: 10 },     // Apex - ball deflects here
+        { x1: 340, y1: 10, x2: 300, y2: 15 },     // Guides ball down-left into play area
 
         // Top wall
-        { x1: 20, y1: 0, x2: 280, y2: 0 },
-        { x1: 280, y1: 0, x2: 280, y2: 20 },      // Connects top wall to deflector curve
+        { x1: 20, y1: 0, x2: 300, y2: 0 },
+        { x1: 300, y1: 0, x2: 300, y2: 15 },      // Connects top wall to curve end
 
         // Inner plunger lane wall - creates the lane but STOPS at y:120
         // This leaves a gap at top for ball to exit into main area
