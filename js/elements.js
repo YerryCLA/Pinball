@@ -21,14 +21,15 @@ class Flipper {
         this.maxAngularVelocity = 0.5; // radians per frame
 
         // Rest and active angles depend on side
-        // Left flipper: rest points down-right, active points up-right
-        // Right flipper: rest points down-left, active points up-left
+        // Left flipper: rest points down-right (~30 deg), active points up-right (~-30 deg)
+        // Right flipper: rest points down-left (~-30 deg), active points up-left (~30 deg)
+        // Note: Right flipper extends in negative X direction, so angles work differently
         if (side === 'left') {
-            this.restAngle = Math.PI / 6;      // 30 degrees down
-            this.activeAngle = -Math.PI / 6;   // 30 degrees up
+            this.restAngle = Math.PI / 6;      // 30 degrees - points down-right
+            this.activeAngle = -Math.PI / 6;   // -30 degrees - points up-right
         } else {
-            this.restAngle = Math.PI - Math.PI / 6;  // 150 degrees (pointing down-left)
-            this.activeAngle = Math.PI + Math.PI / 6; // 210 degrees (pointing up-left)
+            this.restAngle = -Math.PI / 6;     // -30 degrees - points down-left (mirrored)
+            this.activeAngle = Math.PI / 6;    // 30 degrees - points up-left (mirrored)
         }
 
         this.angle = this.restAngle;
@@ -195,14 +196,13 @@ class Flipper {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
 
-        // Draw flipper body
-        const gradient = ctx.createLinearGradient(0, -this.height/2, 0, this.height/2);
-        gradient.addColorStop(0, '#ff6600');
-        gradient.addColorStop(0.5, '#ffaa00');
-        gradient.addColorStop(1, '#ff6600');
+        // Neon cyan glow effect
+        ctx.shadowColor = '#00ffff';
+        ctx.shadowBlur = 15;
 
-        ctx.fillStyle = gradient;
-        ctx.strokeStyle = '#cc4400';
+        // Draw flipper body with cyan neon color
+        ctx.fillStyle = '#00ffff';
+        ctx.strokeStyle = '#00cccc';
         ctx.lineWidth = 2;
 
         // Draw tapered flipper shape
@@ -223,14 +223,18 @@ class Flipper {
         ctx.fill();
         ctx.stroke();
 
-        // Draw pivot point
-        ctx.fillStyle = '#ffcc00';
+        // Draw pivot point with pink glow
+        ctx.shadowColor = '#ff00ff';
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = '#ff00ff';
         ctx.beginPath();
         ctx.arc(0, 0, this.height / 3, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#cc9900';
+        ctx.strokeStyle = '#cc00cc';
         ctx.stroke();
 
+        // Reset shadow
+        ctx.shadowBlur = 0;
         ctx.restore();
     }
 }
@@ -317,55 +321,59 @@ class Bumper {
         const pulse = Math.sin(this.pulsePhase) * 0.1 + 1;
         const displayRadius = this.radius * pulse;
 
-        // Outer ring
+        ctx.save();
+
+        // Outer ring with neon glow
         ctx.beginPath();
         ctx.arc(this.x, this.y, displayRadius, 0, Math.PI * 2);
 
         if (this.isLit) {
-            // Lit state - bright glow
+            // Lit state - bright yellow/white glow when hit
             const gradient = ctx.createRadialGradient(
                 this.x, this.y, 0,
                 this.x, this.y, displayRadius
             );
             gradient.addColorStop(0, '#ffffff');
             gradient.addColorStop(0.3, '#ffff00');
-            gradient.addColorStop(0.7, '#ff6600');
-            gradient.addColorStop(1, '#ff0000');
+            gradient.addColorStop(0.7, '#ffff00');
+            gradient.addColorStop(1, '#cccc00');
             ctx.fillStyle = gradient;
 
-            // Draw glow
+            // Intense glow when hit
             ctx.shadowColor = '#ffff00';
-            ctx.shadowBlur = 20;
+            ctx.shadowBlur = 30;
         } else {
-            // Normal state
+            // Normal state - pink neon
             const gradient = ctx.createRadialGradient(
                 this.x, this.y, 0,
                 this.x, this.y, displayRadius
             );
-            gradient.addColorStop(0, '#ff4444');
-            gradient.addColorStop(0.5, '#cc0000');
-            gradient.addColorStop(1, '#880000');
+            gradient.addColorStop(0, '#ff66ff');
+            gradient.addColorStop(0.5, '#ff00ff');
+            gradient.addColorStop(1, '#cc00cc');
             ctx.fillStyle = gradient;
-            ctx.shadowBlur = 0;
+            ctx.shadowColor = '#ff00ff';
+            ctx.shadowBlur = 15;
         }
 
         ctx.fill();
 
-        // Reset shadow
-        ctx.shadowBlur = 0;
-
-        // Inner ring
+        // Inner ring with cyan accent
         ctx.beginPath();
         ctx.arc(this.x, this.y, displayRadius * 0.6, 0, Math.PI * 2);
-        ctx.strokeStyle = this.isLit ? '#ffffff' : '#ffcc00';
+        ctx.strokeStyle = this.isLit ? '#ffffff' : '#00ffff';
+        ctx.shadowColor = this.isLit ? '#ffffff' : '#00ffff';
+        ctx.shadowBlur = 10;
         ctx.lineWidth = 3;
         ctx.stroke();
 
         // Center dot
         ctx.beginPath();
         ctx.arc(this.x, this.y, displayRadius * 0.2, 0, Math.PI * 2);
-        ctx.fillStyle = this.isLit ? '#ffffff' : '#ffcc00';
+        ctx.fillStyle = this.isLit ? '#ffffff' : '#00ffff';
         ctx.fill();
+
+        ctx.restore();
     }
 }
 
@@ -496,6 +504,8 @@ class Slingshot {
     }
 
     draw(ctx) {
+        ctx.save();
+
         ctx.beginPath();
         ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
         for (let i = 1; i < this.vertices.length; i++) {
@@ -503,26 +513,26 @@ class Slingshot {
         }
         ctx.closePath();
 
-        // Fill
+        // Fill with neon glow
         if (this.isLit) {
+            // Bright yellow glow when hit
             ctx.fillStyle = '#ffff00';
             ctx.shadowColor = '#ffff00';
-            ctx.shadowBlur = 15;
+            ctx.shadowBlur = 25;
         } else {
-            ctx.fillStyle = '#00aa00';
-            ctx.shadowBlur = 0;
+            // Cyan neon glow
+            ctx.fillStyle = '#00cccc';
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = 15;
         }
         ctx.fill();
 
-        // Reset shadow
-        ctx.shadowBlur = 0;
-
-        // Outline
-        ctx.strokeStyle = this.isLit ? '#ffffff' : '#00ff00';
+        // Outline with glow
+        ctx.strokeStyle = this.isLit ? '#ffffff' : '#00ffff';
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Draw rubber band (the active edge)
+        // Draw rubber band (the active edge) with pink neon
         ctx.beginPath();
         if (this.side === 'left') {
             ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
@@ -531,9 +541,13 @@ class Slingshot {
             ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
             ctx.lineTo(this.vertices[1].x, this.vertices[1].y);
         }
-        ctx.strokeStyle = this.isLit ? '#ff0000' : '#cc0000';
+        ctx.strokeStyle = this.isLit ? '#ffff00' : '#ff00ff';
+        ctx.shadowColor = this.isLit ? '#ffff00' : '#ff00ff';
+        ctx.shadowBlur = 15;
         ctx.lineWidth = 4;
         ctx.stroke();
+
+        ctx.restore();
     }
 }
 
@@ -614,18 +628,30 @@ class Target {
     }
 
     draw(ctx) {
-        // Draw target base
-        ctx.fillStyle = this.isLit ? '#00ff00' : '#004400';
+        ctx.save();
+
+        // Draw target base with neon glow
+        if (this.isLit) {
+            // Lit state - bright yellow neon
+            ctx.fillStyle = '#ffff00';
+            ctx.shadowColor = '#ffff00';
+            ctx.shadowBlur = 20;
+        } else {
+            // Unlit state - dim pink
+            ctx.fillStyle = '#660066';
+            ctx.shadowColor = '#ff00ff';
+            ctx.shadowBlur = 5;
+        }
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
-        // Draw border
-        ctx.strokeStyle = this.isLit ? '#00ff00' : '#008800';
+        // Draw border with glow
+        ctx.strokeStyle = this.isLit ? '#ffff00' : '#ff00ff';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
 
         // Draw hit effect
         if (this.glowIntensity > 0) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${this.glowIntensity * 0.5})`;
+            ctx.fillStyle = `rgba(255, 255, 0, ${this.glowIntensity * 0.5})`;
             ctx.fillRect(this.x, this.y, this.width, this.height);
         }
 
@@ -643,18 +669,21 @@ class Target {
                 indicatorX, indicatorY, indicatorRadius
             );
             gradient.addColorStop(0, '#ffffff');
-            gradient.addColorStop(0.5, '#00ff00');
-            gradient.addColorStop(1, '#008800');
+            gradient.addColorStop(0.5, '#ffff00');
+            gradient.addColorStop(1, '#cccc00');
             ctx.fillStyle = gradient;
-            ctx.shadowColor = '#00ff00';
-            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#ffff00';
+            ctx.shadowBlur = 15;
         } else {
-            ctx.fillStyle = '#002200';
-            ctx.shadowBlur = 0;
+            // Unlit indicator - cyan accent
+            ctx.fillStyle = '#004444';
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = 5;
         }
 
         ctx.fill();
-        ctx.shadowBlur = 0;
+
+        ctx.restore();
     }
 }
 
@@ -726,27 +755,35 @@ class Plunger {
     }
 
     draw(ctx) {
-        // Draw plunger channel
-        ctx.fillStyle = '#333333';
+        ctx.save();
+
+        // Draw plunger channel with subtle glow
+        ctx.fillStyle = '#1a1a2e';
+        ctx.shadowColor = '#ff00ff';
+        ctx.shadowBlur = 5;
         ctx.fillRect(this.x - 5, this.y - this.height, this.width + 10, this.height + 20);
 
         // Draw plunger body (compressed based on power)
         const plungerTop = this.y - this.height + this.compressionOffset;
         const plungerHeight = this.height - this.compressionOffset;
 
-        // Plunger gradient
+        // Plunger gradient with cyan neon
         const gradient = ctx.createLinearGradient(this.x, 0, this.x + this.width, 0);
-        gradient.addColorStop(0, '#888888');
-        gradient.addColorStop(0.3, '#cccccc');
-        gradient.addColorStop(0.5, '#ffffff');
-        gradient.addColorStop(0.7, '#cccccc');
-        gradient.addColorStop(1, '#888888');
+        gradient.addColorStop(0, '#006666');
+        gradient.addColorStop(0.3, '#00cccc');
+        gradient.addColorStop(0.5, '#00ffff');
+        gradient.addColorStop(0.7, '#00cccc');
+        gradient.addColorStop(1, '#006666');
 
         ctx.fillStyle = gradient;
+        ctx.shadowColor = '#00ffff';
+        ctx.shadowBlur = 10;
         ctx.fillRect(this.x, plungerTop, this.width, plungerHeight);
 
-        // Draw plunger head
-        ctx.fillStyle = '#ffcc00';
+        // Draw plunger head with pink neon
+        ctx.fillStyle = '#ff00ff';
+        ctx.shadowColor = '#ff00ff';
+        ctx.shadowBlur = 15;
         ctx.fillRect(this.x - 2, plungerTop, this.width + 4, 15);
 
         // Draw power indicator
@@ -754,26 +791,33 @@ class Plunger {
         const indicatorY = this.y + 25;
 
         // Background
-        ctx.fillStyle = '#222222';
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#0a0a1a';
         ctx.fillRect(this.x, indicatorY, this.width, indicatorHeight);
 
-        // Power level
+        // Power level with neon gradient
         const powerHeight = indicatorHeight * this.power;
         const powerGradient = ctx.createLinearGradient(0, indicatorY + indicatorHeight, 0, indicatorY);
-        powerGradient.addColorStop(0, '#00ff00');
+        powerGradient.addColorStop(0, '#00ffff');
         powerGradient.addColorStop(0.5, '#ffff00');
-        powerGradient.addColorStop(1, '#ff0000');
+        powerGradient.addColorStop(1, '#ff00ff');
 
         ctx.fillStyle = powerGradient;
+        ctx.shadowColor = this.power > 0.5 ? '#ffff00' : '#00ffff';
+        ctx.shadowBlur = 10 + this.power * 15;
         ctx.fillRect(this.x, indicatorY + indicatorHeight - powerHeight, this.width, powerHeight);
 
-        // Border
-        ctx.strokeStyle = '#666666';
+        // Border with glow
+        ctx.strokeStyle = '#ff00ff';
+        ctx.shadowColor = '#ff00ff';
+        ctx.shadowBlur = 5;
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, indicatorY, this.width, indicatorHeight);
 
-        // Spring effect
-        ctx.strokeStyle = '#666666';
+        // Spring effect with cyan neon
+        ctx.strokeStyle = '#00ffff';
+        ctx.shadowColor = '#00ffff';
+        ctx.shadowBlur = 8;
         ctx.lineWidth = 2;
         const springSegments = 8;
         const springWidth = this.width * 0.6;
@@ -792,6 +836,8 @@ class Plunger {
             }
         }
         ctx.stroke();
+
+        ctx.restore();
     }
 }
 
@@ -820,64 +866,26 @@ class Wall {
     }
 
     checkCollision(ball) {
-        // Project ball center onto line
-        const t = Math.max(0, Math.min(1,
-            ((ball.x - this.x1) * this.dx + (ball.y - this.y1) * this.dy) /
-            (this.length * this.length)
-        ));
-
-        // Closest point on wall to ball
-        const closestX = this.x1 + t * this.dx;
-        const closestY = this.y1 + t * this.dy;
-
-        // Distance from ball to closest point
-        const distX = ball.x - closestX;
-        const distY = ball.y - closestY;
-        const dist = Math.sqrt(distX * distX + distY * distY);
-
-        if (dist < ball.radius) {
-            // Collision detected
-            // Determine which side of the wall the ball is on
-            let nx = distX / dist;
-            let ny = distY / dist;
-
-            // Separate ball from wall
-            const overlap = ball.radius - dist;
-            ball.x += nx * overlap;
-            ball.y += ny * overlap;
-
-            // Reflect velocity
-            const dot = ball.vx * nx + ball.vy * ny;
-            ball.vx = ball.vx - 2 * dot * nx;
-            ball.vy = ball.vy - 2 * dot * ny;
-
-            // Apply some energy loss
-            ball.vx *= 0.95;
-            ball.vy *= 0.95;
-
+        const collision = circleLineCollision(ball, this.x1, this.y1, this.x2, this.y2);
+        if (collision) {
+            // Resolve collision - reflect ball velocity
+            resolveCollision(ball, collision.normal, PHYSICS.bounciness, collision.depth);
             return true;
         }
-
         return false;
     }
 
     draw(ctx) {
+        ctx.save();
+        ctx.strokeStyle = '#ff00ff';
+        ctx.shadowColor = '#ff00ff';
+        ctx.shadowBlur = 5;
+        ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(this.x1, this.y1);
         ctx.lineTo(this.x2, this.y2);
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = this.thickness;
-        ctx.lineCap = 'round';
         ctx.stroke();
-
-        // Draw end caps
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x1, this.y1, this.thickness / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(this.x2, this.y2, this.thickness / 2, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -945,26 +953,34 @@ class Spinner {
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
 
-        // Draw spinner blade
-        ctx.fillStyle = '#ffaa00';
+        // Draw spinner blade with yellow neon glow
+        ctx.fillStyle = '#ffff00';
+        ctx.shadowColor = '#ffff00';
+        ctx.shadowBlur = 10 + Math.abs(this.angularVelocity) * 5;
         ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
 
-        // Draw center hub
-        ctx.fillStyle = '#888888';
+        // Draw center hub with pink accent
+        ctx.fillStyle = '#ff00ff';
+        ctx.shadowColor = '#ff00ff';
+        ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(0, 0, 5, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
 
-        // Draw mounting posts
-        ctx.fillStyle = '#666666';
+        // Draw mounting posts with cyan glow
+        ctx.save();
+        ctx.fillStyle = '#00ffff';
+        ctx.shadowColor = '#00ffff';
+        ctx.shadowBlur = 5;
         ctx.beginPath();
         ctx.arc(this.x, this.y - this.width / 2 - 5, 3, 0, Math.PI * 2);
         ctx.fill();
         ctx.beginPath();
         ctx.arc(this.x, this.y + this.width / 2 + 5, 3, 0, Math.PI * 2);
         ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -1017,8 +1033,12 @@ class Rollover {
     }
 
     draw(ctx) {
-        // Draw lane background
-        ctx.fillStyle = this.isLit ? '#003300' : '#001100';
+        ctx.save();
+
+        // Draw lane background with subtle glow
+        ctx.fillStyle = this.isLit ? '#002233' : '#0a0a1a';
+        ctx.shadowColor = '#00ffff';
+        ctx.shadowBlur = 3;
         ctx.fillRect(this.x, this.y, this.width, this.height);
 
         // Draw trigger indicator
@@ -1030,18 +1050,21 @@ class Rollover {
         ctx.arc(centerX, centerY, indicatorSize / 2, 0, Math.PI * 2);
 
         if (this.isLit) {
-            ctx.fillStyle = '#00ff00';
-            ctx.shadowColor = '#00ff00';
-            ctx.shadowBlur = 10;
+            // Lit state - bright cyan neon
+            ctx.fillStyle = '#00ffff';
+            ctx.shadowColor = '#00ffff';
+            ctx.shadowBlur = 20;
         } else {
-            ctx.fillStyle = '#004400';
-            ctx.shadowBlur = 0;
+            // Unlit state - dim pink
+            ctx.fillStyle = '#440044';
+            ctx.shadowColor = '#ff00ff';
+            ctx.shadowBlur = 5;
         }
         ctx.fill();
-        ctx.shadowBlur = 0;
 
         // Draw label
         if (this.label) {
+            ctx.shadowBlur = 0;
             ctx.fillStyle = this.isLit ? '#ffffff' : '#888888';
             ctx.font = 'bold 12px Arial';
             ctx.textAlign = 'center';
@@ -1049,10 +1072,14 @@ class Rollover {
             ctx.fillText(this.label, centerX, centerY);
         }
 
-        // Draw border
-        ctx.strokeStyle = '#00ff00';
+        // Draw border with neon glow
+        ctx.strokeStyle = this.isLit ? '#00ffff' : '#ff00ff';
+        ctx.shadowColor = this.isLit ? '#00ffff' : '#ff00ff';
+        ctx.shadowBlur = 5;
         ctx.lineWidth = 1;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+        ctx.restore();
     }
 }
 

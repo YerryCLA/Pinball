@@ -5,11 +5,11 @@
 
 // Physics constants and configuration
 const PHYSICS = {
-    gravity: 0.3,
-    friction: 0.99,
-    bounciness: 0.7,
-    maxSpeed: 20,
-    minSpeed: 0.1  // Below this, velocity is zeroed to prevent micro-movements
+    gravity: 0.18,       // Reduced from 0.3 - ball floats more, gives player more reaction time
+    friction: 0.995,     // Increased from 0.99 - ball maintains speed longer for smoother gameplay
+    bounciness: 0.8,     // Increased from 0.7 - more bouncy, more fun
+    maxSpeed: 25,        // Increased from 20 - allows faster exciting moments
+    minSpeed: 0.1        // Below this, velocity is zeroed to prevent micro-movements
 };
 
 // ============================================================================
@@ -487,9 +487,9 @@ function resolveCollision(ball, normal, bounciness = PHYSICS.bounciness, depth =
  * @param {Object} collision - Collision info from detection
  * @param {number} flipperAngularVelocity - Angular velocity of flipper (radians/frame)
  * @param {Object} flipperPivot - Pivot point of flipper {x, y}
- * @param {number} flipperBounciness - Bounciness of flipper
+ * @param {number} flipperBounciness - Bounciness of flipper (default 1.4 for satisfying hit)
  */
-function resolveFlipperCollision(ball, collision, flipperAngularVelocity, flipperPivot, flipperBounciness = 1.2) {
+function resolveFlipperCollision(ball, collision, flipperAngularVelocity, flipperPivot, flipperBounciness = 1.4) {
     // Calculate flipper velocity at collision point
     const dx = collision.point.x - flipperPivot.x;
     const dy = collision.point.y - flipperPivot.y;
@@ -542,7 +542,7 @@ function processCollisions(ball, gameObjects) {
                         collision,
                         rect.angularVelocity,
                         rect.pivot,
-                        rect.bounciness || 1.2
+                        rect.bounciness || 1.4
                     );
                 } else {
                     const bounciness = rect.bounciness || PHYSICS.bounciness;
@@ -620,10 +620,10 @@ class PhysicsWorld {
      * @param {number} x - Center X
      * @param {number} y - Center Y
      * @param {number} radius - Bumper radius
-     * @param {number} bounciness - Bounce factor
+     * @param {number} bounciness - Bounce factor (default 1.8 for good kick)
      * @param {Function} onCollision - Callback when hit
      */
-    addBumper(x, y, radius, bounciness = 1.5, onCollision = null) {
+    addBumper(x, y, radius, bounciness = 1.8, onCollision = null) {
         this.gameObjects.circles.push({
             x, y, radius, bounciness, onCollision
         });

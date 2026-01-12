@@ -6,7 +6,7 @@ const CANVAS_HEIGHT = 700;
 const TABLE = {
     // Flipper positions
     leftFlipper: { x: 110, y: 620 },
-    rightFlipper: { x: 290, y: 620 },
+    rightFlipper: { x: 210, y: 620 },
     flipperWidth: 80,
     flipperHeight: 15,
 
@@ -44,15 +44,23 @@ const TABLE = {
         { x1: 20, y1: 0, x2: 20, y2: 550 },
         { x1: 20, y1: 550, x2: 60, y2: 600 },
         { x1: 60, y1: 600, x2: 60, y2: 650 },
-        // Right wall
-        { x1: 350, y1: 0, x2: 350, y2: 550 },
+        // Right wall (stops at curve entry point)
+        { x1: 350, y1: 80, x2: 350, y2: 550 },
         { x1: 350, y1: 550, x2: 310, y2: 600 },
         { x1: 310, y1: 600, x2: 310, y2: 650 },
-        // Plunger lane
-        { x1: 350, y1: 0, x2: 380, y2: 0 },
-        { x1: 380, y1: 0, x2: 380, y2: 650 },
-        // Top wall
-        { x1: 20, y1: 0, x2: 350, y2: 0 }
+        // Plunger lane outer wall
+        { x1: 380, y1: 30, x2: 380, y2: 650 },
+        // Plunger lane curve - guides ball left into play area
+        { x1: 380, y1: 30, x2: 360, y2: 15 },    // Curve starts - angles up-left
+        { x1: 360, y1: 15, x2: 330, y2: 10 },    // Continue curving left
+        { x1: 330, y1: 10, x2: 300, y2: 15 },    // Curve apex
+        // Inner curve wall (separates plunger lane from play area)
+        { x1: 350, y1: 80, x2: 365, y2: 50 },    // Angles up-right from main wall
+        { x1: 365, y1: 50, x2: 365, y2: 35 },    // Short vertical to close lane
+        // Top wall (shortened - opening for ball to enter from curve)
+        { x1: 20, y1: 0, x2: 300, y2: 0 },
+        // Top left corner curve
+        { x1: 300, y1: 0, x2: 300, y2: 15 }      // Connects to curve apex
     ]
 };
 
